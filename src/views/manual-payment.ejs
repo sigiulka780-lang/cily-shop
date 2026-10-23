@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ручная оплата - <%= siteName %></title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="bg-grid"></div>
+  <div class="bg-glow"></div>
+  
+  <header class="header">
+    <nav class="nav container">
+      <a href="/" class="logo">
+        <svg class="logo-icon" viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="8" fill="currentColor"/><path d="M8 16L14 22L24 10" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span class="logo-text"><%= siteName %></span>
+      </a>
+    </nav>
+  </header>
+
+  <main style="padding: 140px 0 80px; min-height: 100vh;">
+    <div class="container">
+      <div style="max-width: 600px; margin: 0 auto;">
+        <div style="text-align: center; margin-bottom: 32px;">
+          <h1 style="font-size: 2rem; margin-bottom: 8px;">Ручная оплата</h1>
+          <p style="color: var(--fg-muted);">Переведи сумму на карту, пришли чек — вышлю ключ вручную</p>
+        </div>
+
+        <div class="payment-card" style="background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 32px;">
+          <div class="plan-info" style="margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid var(--border);">
+            <h2 style="color: var(--accent); margin-bottom: 8px;"><%= plan.name %></h2>
+            <div style="font-family: var(--font-mono); font-size: 2rem; font-weight: 700; color: var(--fg);">
+              <%= plan.price_rub.toLocaleString('ru-RU') %> ₽
+            </div>
+            <div style="color: var(--fg-muted); margin-top: 4px;"><%= plan.duration_days %> дней</div>
+          </div>
+
+          <div class="card-details" style="margin-bottom: 24px;">
+            <h3 style="font-size: 1rem; margin-bottom: 16px; color: var(--fg-muted);">Реквизиты для перевода</h3>
+            
+            <div class="detail-row" style="display: flex; justify-content: space-between; align-items: center; padding: 16px; background: var(--bg); border-radius: var(--radius-sm); margin-bottom: 12px;">
+              <span style="color: var(--fg-muted);">Номер карты</span>
+              <div style="display: flex; gap: 8px; align-items: center;">
+                <code id="card-number" style="font-family: var(--font-mono); font-size: 1.1rem; letter-spacing: 2px; background: var(--bg-card); padding: 8px 12px; border-radius: var(--radius-sm); border: 1px solid var(--border); user-select: all;"><%= card.number %></code>
+                <button onclick="copyCard()" class="btn btn--ghost" style="padding: 8px 12px; font-size: 0.8rem;">Копировать</button>
+              </div>
+            </div>
+
+            <div class="detail-row" style="display: flex; justify-content: space-between; align-items: center; padding: 16px; background: var(--bg); border-radius: var(--radius-sm); margin-bottom: 12px;">
+              <span style="color: var(--fg-muted);">Получатель</span>
+              <code style="font-family: var(--font-mono); background: var(--bg-card); padding: 8px 12px; border-radius: var(--radius-sm); border: 1px solid var(--border);"><%= card.holder %></code>
+            </div>
+
+            <div class="detail-row" style="display: flex; justify-content: space-between; align-items: center; padding: 16px; background: var(--bg); border-radius: var(--radius-sm); margin-bottom: 12px;">
+              <span style="color: var(--fg-muted);">Банк</span>
+              <code style="font-family: var(--font-mono); background: var(--bg-card); padding: 8px 12px; border-radius: var(--radius-sm); border: 1px solid var(--border);"><%= card.bank %></code>
+            </div>
+
+            <div class="detail-row" style="display: flex; justify-content: space-between; align-items: center; padding: 16px; background: var(--accent-dim); border: 1px solid var(--accent); border-radius: var(--radius-sm); margin-bottom: 12px;">
+              <span style="color: var(--accent);">Сумма к оплате</span>
+              <strong style="font-family: var(--font-mono); font-size: 1.25rem; color: var(--accent);"><%= plan.price_rub.toLocaleString('ru-RU') %> ₽</strong>
+            </div>
+
+            <div class="detail-row" style="display: flex; justify-content: space-between; align-items: center; padding: 16px; background: var(--bg); border-radius: var(--radius-sm);">
+              <span style="color: var(--fg-muted);">Комментарий (обязательно)</span>
+              <code id="comment" style="font-family: var(--font-mono); font-size: 0.85rem; background: var(--bg-card); padding: 8px 12px; border-radius: var(--radius-sm); border: 1px solid var(--border); user-select: all;"><%= comment %></code>
+            </div>
+          </div>
+
+          <div class="instructions" style="background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-bottom: 24px;">
+            <h3 style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+              Инструкция
+            </h3>
+            <ol style="color: var(--fg-muted); font-size: 0.9rem; line-height: 1.8; padding-left: 20px;">
+              <li>Открой приложение Сбербанк / Тинькофф / другой банк</li>
+              <li>Выбери «Перевод по номеру карты»</li>
+              <li>Вставь номер: <strong><%= card.number %></strong></li>
+              <li>Сумма: <strong><%= plan.price_rub %> ₽</strong></li>
+              <li>В комментарии укажи: <code><%= comment %></code></li>
+              <li>Сделай скриншот чека / сохрани PDF</li>
+              <li>Напиши в поддержку: <a href="https://t.me/CilySupport" target="_blank" rel="noopener" style="color: var(--accent);">@CilySupport</a> с текстом: «Оплатил <%= plan.name %>, чек прикрепил»</li>
+            </ol>
+          </div>
+
+          <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+            <a href="https://t.me/CilySupport" target="_blank" rel="noopener" class="btn btn--primary btn--large">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-2.13c-2.78.6-3.37-1.34-3.37-1.34-.45-1.15-1.11-1.46-1.11-1.46-.9-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.89 1.52 2.34 1.08 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.95 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.37.2 2.39.1 2.64.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.69-4.57 4.94.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12c0-5.52-4.48-10-10-10z"/></svg>
+              Написать в поддержку
+            </a>
+            <a href="/" class="btn btn--ghost btn--large">На главную</a>
+          </div>
+
+          <p style="margin-top: 24px; text-align: center; font-size: 0.8rem; color: var(--fg-muted);">
+            ⚠️ Ключ выдаётся вручную после проверки перевода (обычно 5-30 мин).<br>
+            Сохрани чек — без него ключ не выдадут.
+          </p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    function copyCard() {
+      const num = document.getElementById('card-number').textContent;
+      navigator.clipboard.writeText(num);
+      const btn = event.target;
+      const old = btn.textContent;
+      btn.textContent = 'Скопировано!';
+      btn.style.borderColor = 'var(--accent)';
+      btn.style.color = 'var(--accent)';
+      setTimeout(() => { btn.textContent = old; btn.style.borderColor = ''; btn.style.color = ''; }, 2000);
+    }
+  </script>
+</body>
+</html>

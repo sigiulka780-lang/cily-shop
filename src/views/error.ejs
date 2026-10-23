@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ошибка - <%= siteName %></title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="bg-grid"></div>
+  <div class="bg-glow"></div>
+  
+  <main style="min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 80px 24px;">
+    <div style="text-align: center; max-width: 500px;">
+      <div style="width: 80px; height: 80px; background: rgba(255,71,87,0.1); border: 1px solid var(--danger); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px; color: var(--danger);">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      </div>
+      <h1 style="font-size: 1.75rem; margin-bottom: 16px;">Произошла ошибка</h1>
+      <p style="color: var(--fg-muted); margin-bottom: 24px;"><%= error || 'Внутренняя ошибка сервера. Попробуйте обновить страницу позже.' %></p>
+      <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+        <a href="/" class="btn btn--primary">На главную</a>
+        <a href="https://t.me/CilySupport" target="_blank" rel="noopener" class="btn btn--ghost">Поддержка</a>
+      </div>
+      <% if (process.env.NODE_ENV === 'development') { %>
+      <details style="margin-top: 32px; text-align: left; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px;">
+        <summary style="cursor: pointer; font-family: var(--font-mono); font-size: 0.8rem; color: var(--fg-muted);">Детали ошибки (dev)</summary>
+        <pre style="margin-top: 16px; font-family: var(--font-mono); font-size: 0.75rem; color: var(--fg-muted); white-space: pre-wrap; overflow: auto;"><%= error %></pre>
+      </details>
+      <% } %>
+    </div>
+  </main>
+</body>
+</html>

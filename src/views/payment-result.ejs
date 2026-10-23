@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= success ? 'Оплата успешна' : 'Оплата не прошла' %> - <%= siteName %></title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="bg-grid"></div>
+  <div class="bg-glow"></div>
+  
+  <header class="header">
+    <nav class="nav container">
+      <a href="/" class="logo">
+        <svg class="logo-icon" viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="8" fill="currentColor"/><path d="M8 16L14 22L24 10" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span class="logo-text"><%= siteName %></span>
+      </a>
+    </nav>
+  </header>
+
+  <main style="padding: 140px 0 80px; min-height: 100vh; display: flex; align-items: center;">
+    <div class="container">
+      <div style="max-width: 560px; margin: 0 auto; text-align: center;">
+        <% if (success) { %>
+        <div class="success-icon" style="width: 80px; height: 80px; background: var(--accent-dim); border: 1px solid var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px; color: var(--accent);">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <h1 style="font-size: 2rem; margin-bottom: 12px;">Оплата прошла успешно!</h1>
+        <p style="color: var(--fg-muted); margin-bottom: 32px;">Ваша подписка активирована. Ключ отправлен на email и доступен ниже.</p>
+        
+        <% if (license) { %>
+        <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; margin-bottom: 24px; text-align: left;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--border);">
+            <span style="color: var(--fg-muted); font-size: 0.85rem;">Лицензионный ключ</span>
+            <span class="status-active" style="display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--accent);"><span class="status-dot"></span>Активен</span>
+          </div>
+          <div style="font-family: var(--font-mono); font-size: 1rem; letter-spacing: 1px; background: var(--bg); padding: 16px; border-radius: var(--radius-sm); border: 1px solid var(--border); word-break: break-all; margin-bottom: 16px;" id="license-key"><%= license.id %></div>
+          <button onclick="copyKey()" class="btn btn--ghost btn--block" style="margin-bottom: 16px;">Копировать ключ</button>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; font-size: 0.85rem; color: var(--fg-muted);">
+            <div><strong>Тариф:</strong> <%= plan?.name %></div>
+            <div><strong>Действует до:</strong> <%= license.expiresAt ? new Date(license.expiresAt).toLocaleDateString('ru-RU') : '—' %></div>
+          </div>
+        </div>
+        <% } %>
+        
+        <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+          <a href="/download/celerity-loader.exe?key=<%= license?.id %>" class="btn btn--primary">Скачать лоадер</a>
+          <a href="https://t.me/CilySupport" target="_blank" rel="noopener" class="btn btn--ghost">Поддержка</a>
+        </div>
+        
+        <p style="margin-top: 24px; font-size: 0.85rem; color: var(--fg-muted);">
+          Инструкция: запустите лоадер от администратора → введите ключ → нажмите INJECT
+        </p>
+        
+        <% } else { %>
+        <div class="error-icon" style="width: 80px; height: 80px; background: rgba(255,71,87,0.1); border: 1px solid var(--danger); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px; color: var(--danger);">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+        </div>
+        <h1 style="font-size: 2rem; margin-bottom: 12px;">Оплата не завершена</h1>
+        <p style="color: var(--fg-muted); margin-bottom: 32px;"><%= error || 'Платёж не прошёл или был отменён. Попробуйте снова или обратитесь в поддержку.' %></p>
+        <a href="/" class="btn btn--primary">Вернуться на главную</a>
+        <a href="https://t.me/CilySupport" target="_blank" rel="noopener" class="btn btn--ghost" style="margin-left: 12px;">Поддержка</a>
+        <% } %>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-bottom">
+        <p>&copy; 2024-2026 <%= siteName %>. Не официальный продукт Valve.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    function copyKey() {
+      const key = document.getElementById('license-key')?.textContent;
+      if (key) {
+        navigator.clipboard.writeText(key.trim());
+        const btn = event.target;
+        const original = btn.textContent;
+        btn.textContent = 'Скопировано!';
+        btn.style.borderColor = 'var(--accent)';
+        btn.style.color = 'var(--accent)';
+        setTimeout(() => { btn.textContent = original; btn.style.borderColor = ''; btn.style.color = ''; }, 2000);
+      }
+    }
+  </script>
+</body>
+</html>
